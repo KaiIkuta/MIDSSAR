@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mzr"
+version = "0.1.0"
+description = "Reduction module for MId Dispersion Spectrograph for Stellar Activity Research"
+authors = [
+    { name = "Kai Ikuta" }
+]
+requires-python = ">=3.8"
+
+dependencies = [
+    "numpy"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
