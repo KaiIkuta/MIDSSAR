@@ -63,12 +63,14 @@ def run(input_path, output_path, sigma=None, dark_image=None, flat_image=None, e
             print(e.stderr)
         raise SigclipError("An error occurred during sigclip execution.")
 """
-# Test code when executed directly instead of as an imported module
-if __name__ == "__main__":
-    # Expected usage example: ../sigclip bias bias.fits
-    try:
-        run("bias", "bias.fits", exec_path="../sigclip")
-        print("Processing completed.")
-    except Exception as e:
-        print(f"Error: {e}")
+import sigclip
+
+sigclip.run(
+    input_path="object",
+    output_path="object.fits",
+    sigma=3.0,
+    dark_image="dark.fits",
+    flat_image="flat.fits",
+    exec_path="../sigclip"
+)
 """        
