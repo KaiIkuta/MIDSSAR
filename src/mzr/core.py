@@ -2,7 +2,7 @@ import os
 import glob
 import shutil
 
-class mzr_analysis:
+class mzr_core:
     """
     A class to process observation data: creating directories, 
     moving spectral files (CaHK and H-alpha), and setting camera IDs.
