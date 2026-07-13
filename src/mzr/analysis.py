@@ -2,72 +2,11 @@ import os
 import glob
 import shutil
 import subprocess
-import mzr.core 
+from mzr.core import mzr_core 
 
 class mzr_analysis(mzr_core):
     """
-    A class to process observation data: creating directories, 
-    moving spectral files (CaHK and H-alpha), and setting camera IDs.
-    """
-    
-    def __init__(self, obs_dates, base_dir="."):
-        if isinstance(obs_dates, str):
-            self.obs_dates = [obs_dates]
-        elif isinstance(obs_dates, list):
-            self.obs_dates = obs_dates
-        else:
-            raise TypeError("Error: 'obs_dates' must be a string or a list of strings.")
-            
-        self.base_dir = base_dir
-
-    def run(self):
-        for date in self.obs_dates:
-            print(f"[{date}] Preparing directories and files...")
-            dir_c = os.path.join(self.base_dir, f"{date}C")
-            dir_h = os.path.join(self.base_dir, f"{date}H")
-            
-            self._create_directories(dir_c, dir_h)
-            self._move_data_files(dir_c, dir_h, date)
-            self._create_camnum_files(dir_c, dir_h)
-            print(f"[{date}] Data preparation completed.\n")
-
-    def _create_directories(self, dir_c, dir_h):
-        os.makedirs(dir_c, exist_ok=True)
-        os.makedirs(dir_h, exist_ok=True)
-
-    def _move_data_files(self, dir_c, dir_h, current_date):
-        # CaHK
-        c_files = glob.glob(os.path.join(self.base_dir, f"mzrc*{current_date}*"))
-        if not c_files:
-            c_files = glob.glob(os.path.join(self.base_dir, "mzrc*"))
-        moved_c = 0
-        for file_path in c_files:
-            if os.path.isfile(file_path):
-                shutil.move(file_path, dir_c)
-                moved_c += 1
-        print(f"  - Moved {moved_c} CaHK files to {dir_c}")
-
-        # H-alpha
-        h_files = glob.glob(os.path.join(self.base_dir, f"mzrh*{current_date}*"))
-        if not h_files:
-            h_files = glob.glob(os.path.join(self.base_dir, "mzrh*"))
-        moved_h = 0
-        for file_path in h_files:
-            if os.path.isfile(file_path):
-                shutil.move(file_path, dir_h)
-                moved_h += 1
-        print(f"  - Moved {moved_h} H-alpha files to {dir_h}")
-
-    def _create_camnum_files(self, dir_c, dir_h):
-        with open(os.path.join(dir_c, "camnum"), "w") as f:
-            f.write("0\n")
-        with open(os.path.join(dir_h, "camnum"), "w") as f:
-            f.write("1\n")
-
-
-class CalibrationPipeline:
-    """
-    A class that wraps ObservationDataProcessor and executes 
+    A class that wraps mzr_core and executes 
     the calibration pipeline (Bias, Flat, Sky, Anchor, and Target).
     """
 
@@ -192,7 +131,6 @@ class CalibrationPipeline:
         anchor_lines = [line for line in log_lines if 'ANCHOR' in line]
         dark_fene_lines = [line for line in log_lines if 'DARK' in line and 'FeNe' in line]
 
-        # doubleコマンドで使用するため、ANCHOR全体のリストを 'anc' ファイルとして保存
         with open(os.path.join(work_dir, "anc"), "w") as f: 
             f.writelines(anchor_lines)
 
@@ -222,38 +160,30 @@ class CalibrationPipeline:
             print("[Warning] No OBJECT lines found in log. Skipping Target analysis.")
             return
 
-        # 1. 'OBJECT{C/H}' ファイルを作成
         obj_file = f"OBJECT{ch}"
         with open(os.path.join(work_dir, obj_file), "w") as f:
             f.writelines(object_lines)
 
-        # 2. reduc 実行
         obj_r = f"OBJECT_r{ch}"
         self._run_cmd(["../reduc", obj_file, obj_r, "bias.fits", "flat.fits"], work_dir)
 
-        # 3. 前回のプロット・ログファイルを削除
         self._remove_files(work_dir, "spec_*.png")
         self._remove_files(work_dir, f"OBJECT_{ch}.log")
 
-        # 4. double 実行 (前段で生成した 'anc' を使用)
         obj_d = f"OBJECT_d{ch}"
         self._run_cmd(["../double", obj_r, obj_d, "mzwarp_dxdy.fits", "anc"], work_dir)
 
-        # 5. GIFアニメーション生成 (double 結果)
-        # globを使って spec_*.png のファイル名リストをソートして取得
         spec_pngs = sorted([os.path.basename(p) for p in glob.glob(os.path.join(work_dir, "spec_*.png"))])
         if spec_pngs:
             gif_file = f"OBJECT_{ch}.gif"
             self._run_cmd(["convert", "-delay", "50", "-loop", "0"] + spec_pngs + [gif_file], work_dir)
             print(f"  - Created {gif_file}")
 
-        # 6. 次の処理に向けてプロットを削除
         self._remove_files(work_dir, "spec_*.png")
 
-        # 7. merge 実行
+
         self._run_cmd(["../merge", obj_d], work_dir)
 
-        # 8. GIFアニメーション生成 (merge 結果)
         spec_pngs_merged = sorted([os.path.basename(p) for p in glob.glob(os.path.join(work_dir, "spec_*.png"))])
         if spec_pngs_merged:
             gif_r_file = f"OBJECT_{ch}r.gif"
