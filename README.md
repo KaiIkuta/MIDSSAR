@@ -22,3 +22,13 @@ import mzr
 ## Analysis procedure (Japanese): 
 
 [https://www.kusastro.kyoto-u.ac.jp/~iwamuro/MIDSSAR/index.html](https://www.kusastro.kyoto-u.ac.jp/~iwamuro/MIDSSAR/index.html)
+
+## Citation
+
+```bibtex
+@article{Iwamuro_2026,
+  author     = {Iwamuro, Fumihide and Nogami, Daisaku and Kino, Masaru and ...},
+  title      = {MiDSSAR: MId Dispersion Spectrograph for Stellar Activity Research},
+  year       = 2026,
+  journal    = {submitted to \pasj},
+}
