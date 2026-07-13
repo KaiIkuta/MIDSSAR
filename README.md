@@ -26,8 +26,8 @@ import mzr
 ## Citation
 
 ```bibtex
-@article{Iwamuro_2026,
-  author     = {Iwamuro, Fumihide and Nogami, Daisaku and Kino, Masaru and ...},
+@article{MIDSSAR,
+  author     = {{Iwamuro}, Fumihide and {Nogami}, Daisaku and {Kino}, Masaru and ...},
   title      = {MiDSSAR: MId Dispersion Spectrograph for Stellar Activity Research},
   year       = 2026,
   journal    = {submitted to \pasj},
