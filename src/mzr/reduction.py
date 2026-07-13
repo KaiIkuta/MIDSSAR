@@ -4,7 +4,7 @@ import shutil
 import subprocess
 from mzr.core import mzr_core 
 
-class mzr_analysis(mzr_core):
+class mzr_reduction(mzr_core):
     """
     A class that wraps mzr_core and executes 
     the calibration pipeline (Bias, Flat, Sky, Anchor, and Target).
