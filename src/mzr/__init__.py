@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-TARGET_DIR = 'src/mzr/codes' 
+TARGET_DIR = 'src/mzr/code' 
 
 COMPILE_COMMANDS = [
     ["gcc", "ave.c", "-o", "ave", "-lm", "-lcfitsio", "-Wall"],
