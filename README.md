@@ -13,7 +13,7 @@ pip install git+https://github.com/KaiIkuta/MIDSSAR.git
 
 ```python
 import mzr
-mzr.mzr_reduction(obs_dates=["20260425"]).run_reduction()
+mzr.mzr_reduction(obs_dates=["20260425"]).run_all()
 ```
 
 ## Analysis procedure (Japanese): 
