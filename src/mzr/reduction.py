@@ -4,7 +4,7 @@ import shutil
 import subprocess
 from mzr.core import mzr_core 
 
-class midssar(mzr_core):
+class mzr_reduction(mzr_core):
     """
     A class that wraps mzr_core and executes 
     the calibration pipeline (Bias, Flat, Sky, Anchor, and Target).
@@ -30,7 +30,7 @@ class midssar(mzr_core):
                 else:
                     print(f"[Warning] Directory not found and will be skipped: {dir_path}")
 
-    def run_reduction(self):
+    def run_all(self):
         if not self.target_dirs:
             print("[Warning] No valid target directories found to process.")
             return
