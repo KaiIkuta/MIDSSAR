@@ -10,13 +10,13 @@ class mzr_reduction(mzr_core):
     the calibration pipeline (Bias, Flat, Sky, Anchor, and Target).
     """
 
-    def __init__(self, obs_dates, channels=None, base_dir="."):
+    def __init__(self, obs_dates, channels=['C', 'H'], base_dir="."):
         self.obs_dates = [obs_dates] if isinstance(obs_dates, str) else obs_dates
         self.base_dir = base_dir
-        self.channels = channels if channels else ['C', 'H']
+        self.channels = channels
         
         # 1. Run Data Processor
-        print("Initializing pipeline: Running ObservationDataProcessor...")
+        print("Initializing pipeline: Setting up directories.")
         processor = mzr_core(obs_dates=self.obs_dates, base_dir=self.base_dir)
         processor.run()
         
