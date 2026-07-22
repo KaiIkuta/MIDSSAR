@@ -17,7 +17,7 @@ class mzr_reduction(mzr_core):
         
         # 1. Run Data Processor
         print("Initializing pipeline: Running ObservationDataProcessor...")
-        processor = ObservationDataProcessor(obs_dates=self.obs_dates, base_dir=self.base_dir)
+        processor = mzr_core(obs_dates=self.obs_dates, base_dir=self.base_dir)
         processor.run()
         
         # 2. Setup target directories
@@ -30,7 +30,7 @@ class mzr_reduction(mzr_core):
                 else:
                     print(f"[Warning] Directory not found and will be skipped: {dir_path}")
 
-    def run_all(self):
+    def run_reduction(self):
         if not self.target_dirs:
             print("[Warning] No valid target directories found to process.")
             return
