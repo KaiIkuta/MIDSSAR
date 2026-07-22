@@ -24,7 +24,7 @@ def _compile_c_codes():
     for cmd in COMPILE_COMMANDS:
         try:
             subprocess.run(cmd, cwd=TARGET_DIR, check=True)
-            print(f"Success: {' '.join(cmd)}")
+            print(f"Compilation Success: {' '.join(cmd)}")
         except subprocess.CalledProcessError as e:
             print(f"Error: Compilation failed ({' '.join(cmd)})\nDetails: {e}")
             raise e
