@@ -52,7 +52,7 @@ class mzr_reduction(mzr_core):
             # Calibration phases
             self._process_bias(work_dir, log_lines)
             self._process_high_freq_flat(work_dir, log_lines)
-            self._process_sky(work_dir, log_lines)
+            self._process_sky(work_dir, log_lines, ch)
             self._process_anchor(work_dir, log_lines)
             
             # Target (OBJECT) analysis phase
@@ -106,9 +106,45 @@ class mzr_reduction(mzr_core):
         
         os.rename(os.path.join(work_dir, "flat0_xy.fits"), os.path.join(work_dir, "flat.fits"))
 
-    def _process_sky(self, work_dir, log_lines):
+
+    def _find_and_copy_prev_sky(self, current_dir, ch):
+        #Search for mzwarp_dxdy.fits, flats.fits, flat.dat
+        target_files = ["mzwarp_dxdy.fits", "flats.fits", "flat.dat"]
+        curr_abs = os.path.abspath(current_dir)
+
+        candidate_dirs = []
+        for root, dirs, _ in os.walk(self.base_dir):
+            for d in dirs:
+                if d.endswith(ch):
+                    path = os.path.abspath(os.path.join(root, d))
+                    if path < curr_abs:
+                        candidate_dirs.append(path)
+
+ 
+        candidate_dirs.sort(reverse=True)
+
+        for prev_dir in candidate_dirs:
+            if all(os.path.exists(os.path.join(prev_dir, f)) for f in target_files):
+                print(f"  [Info] Copying sky reference files from previous run: {prev_dir}")
+                for f in target_files:
+                    src = os.path.join(prev_dir, f)
+                    dst = os.path.join(current_dir, f)
+                    shutil.copy(src, dst)
+                    print(f"    - Copied: {f}")
+                return True
+
+        print(f"  [Warning] Could not find required sky files in any previous directory for channel {ch}.")
+        return False
+
+    def _process_sky(self, work_dir, log_lines, ch):
         print("\n--- Processing SKY ---")
         skyflat_lines = [line for line in log_lines if 'SKYFLAT' in line]
+
+        if not skyflat_lines:
+            print("  [Info] No SKYFLAT lines found. Searching for reference files from previous dates...")
+            self._find_and_copy_prev_sky(work_dir, ch)
+            return
+        
         sky_set2 = skyflat_lines[100:200] 
         with open(os.path.join(work_dir, "sky"), "w") as f: f.writelines(sky_set2)
 
