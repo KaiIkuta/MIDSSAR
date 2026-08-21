@@ -500,7 +500,7 @@ void loadcmp(long c[]){
   c[255]=255;
 }
 
-double tweight(char date[3][16], char jstend[3][16], float exptime){
+double tweight(char date[3][16], char jststr[3][16], float exptime){
   struct tm tm[3]={0};
   time_t t[3];
   double dt[3];
@@ -511,9 +511,9 @@ double tweight(char date[3][16], char jstend[3][16], float exptime){
   sscanf(date[0],"%d-%d-%d",&tm[0].tm_year,&tm[0].tm_mon,&tm[0].tm_mday);
   sscanf(date[1],"%d-%d-%d",&tm[1].tm_year,&tm[1].tm_mon,&tm[1].tm_mday);
   sscanf(date[2],"%d-%d-%d",&tm[2].tm_year,&tm[2].tm_mon,&tm[2].tm_mday);
-  sscanf(jstend[0],"%d:%d:%d",&tm[0].tm_hour,&tm[0].tm_min,&tm[0].tm_sec);
-  sscanf(jstend[1],"%d:%d:%d",&tm[1].tm_hour,&tm[1].tm_min,&tm[1].tm_sec);
-  sscanf(jstend[2],"%d:%d:%d",&tm[2].tm_hour,&tm[2].tm_min,&tm[2].tm_sec);
+  sscanf(jststr[0],"%d:%d:%d",&tm[0].tm_hour,&tm[0].tm_min,&tm[0].tm_sec);
+  sscanf(jststr[1],"%d:%d:%d",&tm[1].tm_hour,&tm[1].tm_min,&tm[1].tm_sec);
+  sscanf(jststr[2],"%d:%d:%d",&tm[2].tm_hour,&tm[2].tm_min,&tm[2].tm_sec);
   //fprintf(stderr,"%d-%d-%d %d:%d:%d\n",tm[0].tm_year,tm[0].tm_mon,tm[0].tm_mday,tm[0].tm_hour,tm[0].tm_min,tm[0].tm_sec);
   //fprintf(stderr,"%d-%d-%d %d:%d:%d\n",tm[1].tm_year,tm[1].tm_mon,tm[1].tm_mday,tm[1].tm_hour,tm[1].tm_min,tm[1].tm_sec);
   //fprintf(stderr,"%d-%d-%d %d:%d:%d\n",tm[2].tm_year,tm[2].tm_mon,tm[2].tm_mday,tm[2].tm_hour,tm[2].tm_min,tm[2].tm_sec);
@@ -545,7 +545,7 @@ int main(int argc,char *argv[])
   double xct,yct,zt,r,r2,r2s,zs,dxzs,dyzs,drzs,dx2zs,dy2zs,dr2zs,zmax,dx,dy,x[4],y[4],z[4],a[2][3],favav[2],favs,wt,xc[NFIBER],yc[NFIBER],favmin,favmax,bmpz1,bmpz2,ws,wk,sk,sg,sgmax,x1,x2,sig,noi,ymax,ymin;//,bkg;
   int cam,im,jm,lp,n,nf,icen,kn2[4][4]={{0,1,1,0},{1,1,1,1},{1,1,1,1},{0,1,1,0}},dae=0,new=1,jc[NFIBER],ic[NFIBER],ix,jx,nsat,k,m,gn,npix[4],tpix[4]={30000,40000,50000,60000},sft,na1,na2,nc,n1,n2;
   FILE *fpt;
-  char buf[1024],fname[5][64],fnamet[96],fnamet2[96],date[3][16],jstend[3][16],gain[16],cn[2]={'C','H'},sdir[32],fene[16],lname[8],object[32];
+  char buf[1024],fname[5][64],fnamet[96],fnamet2[96],date[3][16],jststr[3][16],gain[16],cn[2]={'C','H'},sdir[32],fene[16],lname[8],object[32];
   long gr_screen[LINEPIY/4*LINEPIX/4],c[256];
   struct stat fs[6];
   struct dirent **namelist;
@@ -717,7 +717,7 @@ int main(int argc,char *argv[])
 	k++;
       }
       if(fits_read_key(fp[0], TSTRING, "DATE-OBS", date[0], NULL, &status)) printerror(status);
-      if(fits_read_key(fp[0], TSTRING, "JST-END", jstend[0], NULL, &status)) printerror(status);
+      if(fits_read_key(fp[0], TSTRING, "JST-STR", jststr[0], NULL, &status)) printerror(status);
       if(fits_read_key(fp[0], TSTRING, "OBJECT", object, NULL, &status)) printerror(status);
       if(fits_read_key(fp[0], TFLOAT, "EXPTIME", &exptime, NULL, &status)) printerror(status);
     }
@@ -766,7 +766,7 @@ int main(int argc,char *argv[])
 	if(fits_open_file(&fp[1], fname[3], READONLY, &status)==0){
 	  fprintf(stderr,"Read: %s ... ",fname[3]);
 	  if(fits_read_key(fp[1], TSTRING, "DATE-OBS", date[1], NULL, &status)) printerror(status);
-	  if(fits_read_key(fp[1], TSTRING, "JST-END", jstend[1], NULL, &status)) printerror(status);
+	  if(fits_read_key(fp[1], TSTRING, "JST-STR", jststr[1], NULL, &status)) printerror(status);
 	}
 	else{
 	  sprintf(fnamet,"%s_%03d.fits",fname[3],na1);
@@ -777,7 +777,7 @@ int main(int argc,char *argv[])
 	    exit(0);
 	  }
 	  if(fits_read_key(fp[1], TSTRING, "DATE-OBS", date[1], NULL, &status)) printerror(status);
-	  if(fits_read_key(fp[1], TSTRING, "JST-END", jstend[1], NULL, &status)) printerror(status);
+	  if(fits_read_key(fp[1], TSTRING, "JST-STR", jststr[1], NULL, &status)) printerror(status);
 	  na2=1;
 	  while(1){
 	    sprintf(fnamet,"%s_%03d.fits",fname[3],na2);
@@ -795,9 +795,9 @@ int main(int argc,char *argv[])
 	      }
 	    }
 	    if(fits_read_key(fp[2], TSTRING, "DATE-OBS", date[2], NULL, &status)) printerror(status);
-	    if(fits_read_key(fp[2], TSTRING, "JST-END", jstend[2], NULL, &status)) printerror(status);
-	    wt=tweight(date,jstend,exptime);
-	    //fprintf(stderr,"wt=%g %s %s %s",wt,jstend[0],jstend[1],jstend[2]);getchar();
+	    if(fits_read_key(fp[2], TSTRING, "JST-STR", jststr[2], NULL, &status)) printerror(status);
+	    wt=tweight(date,jststr,exptime);
+	    //fprintf(stderr,"wt=%g %s %s %s",wt,jststr[0],jststr[1],jststr[2]);getchar();
 	    if(wt>=0.){
 	      if(wt>1.){
 		if(fits_close_file(fp[2], &status)) printerror(status);
@@ -808,7 +808,7 @@ int main(int argc,char *argv[])
 	    if(fits_close_file(fp[1], &status)) printerror(status);
 	    fp[1]=fp[2];
 	    strcpy(date[1],date[2]);
-	    strcpy(jstend[1],jstend[2]);
+	    strcpy(jststr[1],jststr[2]);
 	    na1++;na2++;
 	  }
 	}
@@ -887,7 +887,7 @@ int main(int argc,char *argv[])
 	      //fprintf(stderr,"%g %g %g %g",xct,yct,dx2zs,dy2zs);getchar();
 	    }
 	    ax[n][m]=xct;ay[n][m]=yct;
-	    fprintf(stderr,"dr/dx/dy=%.3lf/%.3lf/%.3lf (%.3lf %.3lf) @%s\n",dr2zs,dx2zs,dy2zs,ax[n][m],ay[n][m],jstend[m]);
+	    fprintf(stderr,"dr/dx/dy=%.3lf/%.3lf/%.3lf (%.3lf %.3lf) @%s\n",dr2zs,dx2zs,dy2zs,ax[n][m],ay[n][m],jststr[m]);
 	  }
 	  if(n<4) break;
 	}
@@ -1007,7 +1007,7 @@ int main(int argc,char *argv[])
       status=0;
       if(fits_open_file(&fp[0], fname[0], READONLY, &status)) printerror(status);
       if(fits_read_key(fp[0], TSTRING, "DATE-OBS", date[0], NULL, &status)) printerror(status);
-      if(fits_read_key(fp[0], TSTRING, "JST-END", jstend[0], NULL, &status)) printerror(status);
+      if(fits_read_key(fp[0], TSTRING, "JST-STR", jststr[0], NULL, &status)) printerror(status);
       if(fits_read_key(fp[0], TSTRING, "OBJECT", object, NULL, &status)) printerror(status);
       if(fits_read_key(fp[0], TFLOAT, "EXPTIME", &exptime, NULL, &status)) printerror(status);
     }
@@ -1655,7 +1655,7 @@ int main(int argc,char *argv[])
 	else sprintf(fnamet,"%s/%s_C.log",dir,object);
 	fprintf(stderr,"Append: %s ... ",fnamet);
 	fpt=fopen(fnamet,"a");
-	fprintf(fpt,"%s %s %lf %lf %lf %lf %lf %d %d %d %d %lf %lf %g %lf %lf\n",date[0],jstend[0],xct,yct,r2s,favav[0],sig/noi,npix[0],npix[1],npix[2],npix[3],aa[0],aa[1],wc,ew,ewn);
+	fprintf(fpt,"%s %s %lf %lf %lf %lf %lf %d %d %d %d %lf %lf %g %lf %lf\n",date[0],jststr[0],xct,yct,r2s,favav[0],sig/noi,npix[0],npix[1],npix[2],npix[3],aa[0],aa[1],wc,ew,ewn);
 	fclose(fpt);
 	fprintf(stderr,"OK\n");
 	jm=strlen(fnamet);

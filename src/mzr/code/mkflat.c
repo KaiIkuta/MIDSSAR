@@ -129,7 +129,7 @@ int main(int argc,char *argv[])
     exit(0);
   }
   if(fits_read_key(fp, TSTRING, "DATE-OBS", date, NULL, &status)) printerror(status);
-  if(fits_read_key(fp, TSTRING, "JST-END", jststr, NULL, &status)) printerror(status);
+  if(fits_read_key(fp, TSTRING, "JST-STR", jststr, NULL, &status)) printerror(status);
   if(fits_read_key(fp, TSTRING, "OBJECT", object, NULL, &status)) printerror(status);
   if(fits_read_key(fp, TFLOAT, "EXPTIME", &exptime, NULL, &status)) printerror(status);
   if(fits_read_key(fp, TSTRING, "GAIN", gain, NULL, &status)) printerror(status);
@@ -253,7 +253,7 @@ int main(int argc,char *argv[])
   if (fits_create_file(&fp, fname, &status)) printerror(status);
   if (fits_create_img(fp, bitpix, naxis, naxes, &status)) printerror(status);
   if(fits_write_key(fp, TSTRING, "DATE-OBS", date, NULL, &status)) printerror(status);
-  if(fits_write_key(fp, TSTRING, "JST-END", jststr, NULL, &status)) printerror(status);
+  if(fits_write_key(fp, TSTRING, "JST-STR", jststr, NULL, &status)) printerror(status);
   if(fits_write_key(fp, TSTRING, "OBJECT", object, NULL, &status)) printerror(status);
   if(fits_write_key(fp, TFLOAT, "EXPTIME", &exptime, NULL, &status)) printerror(status);
   if(fits_write_key(fp, TSTRING, "GAIN", gain, NULL, &status)) printerror(status);
