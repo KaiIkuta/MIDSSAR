@@ -19,3 +19,7 @@ mzr.mzr_reduction(obs_dates=["20260425"]).run_all()
 ## Analysis procedure (Japanese): 
 
 [https://www.kusastro.kyoto-u.ac.jp/~iwamuro/MIDSSAR/index.html](https://www.kusastro.kyoto-u.ac.jp/~iwamuro/MIDSSAR/index.html)
+
+## Paper
+
+[Iwamuro et al., PASJ in press](https://arxiv.org/abs/2610.22834)
