@@ -9,12 +9,18 @@ Reduction module for MIDSSAR on Seimei telescope:
 pip install git+https://github.com/KaiIkuta/MIDSSAR.git
 ```
 
-## Import (To be uploaded)
+## Import (To be developed soon)
 
 ```python
 import mzr
-mzr.mzr_reduction(obs_dates=["20260425"]).run_all()
+mzr.mzr_reduction(obs_dates=["20260425"],observer=["Ikuta"]).run_all()
 ```
+##[Memo]
+If skyflat was not taken, it should be downloaded from our folder (or copied from your recent analysis).
+Calibration should be analysed automatically (easily), and the target should be designated from observer name.
+
+
+
 
 ## Analysis procedure (Japanese): 
 
