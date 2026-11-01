@@ -15,8 +15,9 @@ pip install git+https://github.com/KaiIkuta/MIDSSAR.git
 import mzr
 mzr.mzr_reduction(obs_dates=["20260425"],observer=["Ikuta"]).run_all()
 ```
-### [Memo]
+### Memorandum
 If skyflat was not taken, it should be downloaded from our folder (or copied from your recent analysis).
+
 Calibration should be analysed automatically (easily), and the target should be designated from observer name.
 
 
